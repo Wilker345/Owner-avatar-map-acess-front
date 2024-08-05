@@ -1,18 +1,36 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { TextField, Button, Container, Box, Typography } from "@mui/material";
+import React from 'react';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import {
+  TextField,
+  Button,
+  Container,
+  Box,
+  Typography,
+} from '@mui/material';
+import ListQuestions from './ListQuestions';
+import Question from './Question';
 
 const schema = z.object({
-  nome: z.string().min(1, "Nome é obrigatório"),
-  email: z.string().email("Email é obrigatório"),
+  nome: z.string().min(1, 'Nome é obrigatório'),
+  email: z.string().email('Email é obrigatório'),
+  questions: z.array(
+    z.object({
+      answers: z.array(z.string()),
+      otherAnswer: z.string().optional(),
+    })
+  ).nonempty('É necessário pelo menos uma pergunta'),
 });
 
 type FormData = z.infer<typeof schema>;
 
 export const FormComponent: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema)
+  const { register, handleSubmit, control, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      questions: [{ answers: [], otherAnswer: '' }],
+    },
   });
 
   const onSubmit: SubmitHandler<FormData> = data => {
@@ -29,22 +47,26 @@ export const FormComponent: React.FC = () => {
           fullWidth
           label="Nome"
           margin="normal"
-          {...register("nome")}
+          {...register('nome')}
           error={!!errors.nome}
-          helperText={errors.nome ? errors.nome.message : ""}
+          helperText={errors.nome ? errors.nome.message : ''}
         />
         <TextField
           fullWidth
           label="Email"
           margin="normal"
-          {...register("email")}
+          {...register('email')}
           error={!!errors.email}
-          helperText={errors.email ? errors.email.message : ""}
+          helperText={errors.email ? errors.email.message : ''}
         />
+        <ListQuestions control={control} />
+        <Question />
         <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
             Enviar
-        </Button>
+        </Button>      
       </Box>
     </Container>
   );
 };
+
+export default FormComponent;
