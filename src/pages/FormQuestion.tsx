@@ -9,8 +9,9 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import ListQuestions from './ListQuestions';
-import Question from './Question';
+import ListQuestions from '@/components/ListQuestions';
+import PageNav from "@/components/PageNav";
+import Question from '@/components/Question';
 
 const schema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório'),
