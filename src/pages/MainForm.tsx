@@ -22,7 +22,6 @@ const MainForm: React.FC<{ userId: number }> = ({ userId }) => {
   };
 
   const handleSubmit = () => {
-    // Submit the selected answers to the backend or handle as needed
     console.log(selectedAnswers);
   };
 

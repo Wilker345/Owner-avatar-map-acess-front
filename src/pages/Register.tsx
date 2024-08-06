@@ -11,7 +11,7 @@ const schema = z.object({
   phone_number: z.string().min(10, "Número de telefone é obrigatório"),
   email: z.string().email("Email é obrigatório"),
   password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
-  user_group: z.string().optional()
+  user_groups: z.number()
 });
 
 type FormData = z.infer<typeof schema>;
@@ -39,15 +39,22 @@ const Register: React.FC = () => {
 
     if (newGroup) {
       const groupResponse = await api.post('/user-groups', { text: newGroup });
-      selectedGroups = [{ id: groupResponse.data.id, text: newGroup }];
+      
     } else {
-      selectedGroups = userGroups.filter((group: { id: number; text: string }) => group.id === parseInt(data.user_group));
+      const groupId = data.user_groups;
+
+      const groupResponse = await api.get(`/user-groups/${groupId}`)
+
+      selectedGroups = groupResponse.data;
     }
 
     try {
+      console.log(selectedGroups);
       await api.post('/users', {
-        ...data,
-        user_groups: selectedGroups,
+        phone_number: data.phone_number,
+        email: data.email,
+        password: data.password,
+        user_groups: [selectedGroups],
       });
       navigate('/login');
     } catch (error) {
@@ -104,10 +111,10 @@ const Register: React.FC = () => {
             />
           )}
         />
-        <FormControl fullWidth margin="normal" error={!!errors.user_group}>
+        <FormControl fullWidth margin="normal" error={!!errors.user_groups}>
           <InputLabel id="user-group-label">Grupo de Usuários</InputLabel>
           <Controller
-            name="user_group"
+            name="user_groups"
             control={control}
             render={({ field }) => (
               <Select
@@ -129,8 +136,8 @@ const Register: React.FC = () => {
               </Select>
             )}
           />
-          {errors.user_group && (
-            <FormHelperText>{errors.user_group.message}</FormHelperText>
+          {errors.user_groups && (
+            <FormHelperText>{errors.user_groups.message}</FormHelperText>
           )}
         </FormControl>
         <TextField

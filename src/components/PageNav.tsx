@@ -1,14 +1,15 @@
 import { NavLink } from "react-router-dom";
+import { Button } from "@mui/material";
+import { useAuth } from "@/contexts/AuthContext";
 import styles from "./PageNav.module.css";
-import {Button} from "@mui/material";
-import {useAuth} from "@/contexts/AuthContext";
 
 function PageNav() {
     const { logout, isAuthenticated } = useAuth();
 
     function handleLogout(){
-        logout()
+        logout();
     }
+
     return (
         <nav className={styles.nav}>
             <ul>
@@ -16,14 +17,28 @@ function PageNav() {
                     <NavLink to="/form">Formulário</NavLink>
                 </li>
                 <li>
-                    <NavLink to="/formResponses">Avaliações</NavLink>
+                    <NavLink to="/questions/new">Questões</NavLink>
                 </li>
                 <li>
-                    <Button variant="contained" color="primary" sx={{mt: 2}} onClick={() => {
-                       handleLogout()
-                    }}>Logout</Button>
+                    <NavLink to="/answers/new">Respostas</NavLink>
+                </li>
+                <li>
+                    <NavLink to="/orientation/new">Orientações</NavLink>
+                </li>
+                <li>
+                    <NavLink to="/reports">Relatórios</NavLink>
                 </li>
             </ul>
+            {isAuthenticated && (
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    className={styles.button} 
+                    onClick={handleLogout}
+                >
+                    Logout
+                </Button>
+            )}
         </nav>
     );
 }

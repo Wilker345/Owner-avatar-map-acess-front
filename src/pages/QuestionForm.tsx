@@ -1,4 +1,3 @@
-// src/components/QuestionForm.tsx
 import React from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,7 +8,7 @@ import api from '@/utils/axios';
 
 const schema = z.object({
   text: z.string().min(1, "Texto da questão é obrigatório"),
-  user_group_id: z.string().min(1, "Grupo de usuário é obrigatório")
+  user_group_id: z.number().min(1, "Grupo de usuário é obrigatório")
 });
 
 type FormData = z.infer<typeof schema>;
@@ -30,10 +29,9 @@ const QuestionForm: React.FC = () => {
   const onSubmit: SubmitHandler<FormData> = async data => {
     try {
       await api.post('/questions', {
-        ...data,
-        user_group_id: parseInt(data.user_group_id)
+        text: data.text,
+        user_group_id: data.user_group_id
       });
-      // Optionally, redirect or clear the form after successful submission
     } catch (error) {
       console.error("Erro ao cadastrar questão", error);
     }

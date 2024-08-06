@@ -1,16 +1,17 @@
-// src/components/AnswerForm.tsx
 import React from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TextField, Button, Container, Box, Typography, MenuItem, Select, FormControl, InputLabel, FormHelperText } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import api from '@/utils/axios';
 
 const schema = z.object({
   text: z.string().min(1, "Texto da resposta é obrigatório"),
-  question_id: z.string().min(1, "Questão é obrigatória")
+  question_id: z.number().min(1, "Questão é obrigatória")
 });
+
 
 type FormData = z.infer<typeof schema>;
 
@@ -28,15 +29,17 @@ const AnswerForm: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<FormData> = async data => {
+    const navigate = useNavigate();
+
     try {
       await api.post('/answers', {
-        ...data,
-        question_id: parseInt(data.question_id),
+        text: data.text,
+        question_id: data.question_id,
         other: false
       });
-      // Optionally, redirect or clear the form after successful submission
+      navigate("/form");
     } catch (error) {
-      console.error("Erro ao cadastrar resposta", error);
+      return(<h3>Erro ao cadastrar resposta</h3>);
     }
   };
 

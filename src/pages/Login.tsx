@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TextField, Button, Container, Box, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import api from '@/utils/axios';
+import { useAuth } from '@/contexts/AuthContext';
 
 const schema = z.object({
   email: z.string().email("Email é obrigatório"),
@@ -19,13 +19,11 @@ const Login: React.FC = () => {
     resolver: zodResolver(schema)
   });
 
+  const { login } = useAuth();
+
   const onSubmit: SubmitHandler<FormData> = async data => {
-    try {
-      await api.post('/login', data);
-      navigate('/');
-    } catch (error) {
-      console.error("Erro ao fazer login", error);
-    }
+    login(data.email, data.password);
+    navigate('/form');
   };
 
   return (
@@ -63,12 +61,6 @@ const Login: React.FC = () => {
             />
           )}
         />
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          Não tem uma conta?{' '}
-          <Link component="button" variant="body2" onClick={() => navigate('/register')}>
-            Cadastre-se
-          </Link>
-        </Typography>
         <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
           Entrar
         </Button>

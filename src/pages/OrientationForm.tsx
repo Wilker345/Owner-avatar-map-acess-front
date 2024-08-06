@@ -1,4 +1,3 @@
-// src/components/GuidanceForm.tsx
 import React from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,8 +8,8 @@ import api from '@/utils/axios';
 
 const schema = z.object({
   text: z.string().min(1, "Texto da orientação é obrigatório"),
-  value: z.number().min(0, "Valor é obrigatório"),
-  answer_id: z.string().min(1, "Resposta é obrigatória")
+  value_type: z.string().min(0, "Valor é obrigatório"),
+  answer_id: z.number().min(1, "Resposta é obrigatória")
 });
 
 type FormData = z.infer<typeof schema>;
@@ -30,11 +29,11 @@ const OrientationForm: React.FC = () => {
 
   const onSubmit: SubmitHandler<FormData> = async data => {
     try {
-      await api.post('/guidances', {
-        ...data,
-        answer_id: parseInt(data.answer_id)
+      await api.post('/orientations', {
+        text: data.text,
+        value: Number(data.value_type),
+        answer_id: data.answer_id
       });
-      // Optionally, redirect or clear the form after successful submission
     } catch (error) {
       console.error("Erro ao cadastrar orientação", error);
     }
@@ -61,17 +60,17 @@ const OrientationForm: React.FC = () => {
           )}
         />
         <Controller
-          name="value"
+          name="value_type"
           control={control}
           render={({ field }) => (
             <TextField
               fullWidth
-              type="number"
               label="Valor"
               margin="normal"
               {...field}
-              error={!!errors.value}
-              helperText={errors.value ? errors.value.message : ""}
+              onChange={(e) => field.onChange(Number(e.target.value))}
+              error={!!errors.value_type}
+              helperText={errors.value_type ? errors.value_type.message : ""}
             />
           )}
         />
